@@ -203,7 +203,7 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
                 VALUES($1,1) 
                 ON CONFLICT (user_id) 
                 DO 
-                UPDATE SET times = EXCLUDED.times + 1;
+                UPDATE SET times = thanked_users.times + 1;
                 ",
                 thanked_user_id
             )

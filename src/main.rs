@@ -4,8 +4,8 @@ use serenity::prelude::*;
 use serenity::{
     framework::standard::{
         help_commands,
-        macros::{check, command, group, help, hook},
-        Args, CheckResult, CommandGroup, CommandOptions, CommandResult, DispatchError, HelpOptions,
+        macros::{ command, group, help, hook},
+        Args, CommandGroup,  CommandResult,  HelpOptions,
         StandardFramework,
     },
     model::{channel::Message, gateway::Ready, id::UserId},
@@ -79,12 +79,19 @@ impl TypeMapKey for DbPool {
     type Value = PgPool;
 }
 
+struct BotId;
+
+impl TypeMapKey for BotId {
+    type Value = UserId;
+}
 struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
-    async fn ready(&self, _: Context, ready: Ready) {
-        println!("{} is connected!", ready.user.name);
+    async fn ready(&self, ctx: Context, ready: Ready) {
+        println!("{} is connected! with id {}", ready.user.name, ready.user.id);
+        let mut data = ctx.data.write().await;
+        data.insert::<BotId>(ready.user.id);
     }
 }
 
@@ -160,13 +167,13 @@ struct General;
 #[only_in("guild")]
 #[help_available]
 async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
-    let mut contents = String::from("Thanks for informing me that these users helped you out!");
-    let thanking: Vec<_> = msg
-        .mentions
-        .iter()
-        .filter(|user| user.id != msg.author.id)
-        .collect();
-
+    let thanking: &Vec<_> = &msg.mentions;
+    let mention_count = thanking.len();
+    if mention_count == 0 {
+        msg.channel_id.say(&ctx.http, "Please ping the user in your thank message so I know who you are thanking.").await?;
+        return Ok(())
+    }
+    
     let mut transaction = {
         let data = ctx.data.read().await;
         let pool = data.get::<DbPool>().expect("No db pool?");
@@ -178,7 +185,11 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
 
     let thanker_id = i64::from(msg.author.id);
     let mut contains_at_least_one_to_recent = false;
+    let mut thanked_self = false;
     for thanked_user in thanking {
+        if thanked_user.id == msg.author.id {
+            thanked_self=true;
+        }
         let thanked_user_id = i64::from(thanked_user.id);
         let count = query!(
             "
@@ -195,7 +206,7 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
         .fetch_one(&mut transaction)
         .await?
         .count
-        .expect("This really should never happen");
+        .expect("SQL COUNT returned NULL. The world is broken!");
         if count == 0 {
             query!(
                 "
@@ -209,7 +220,7 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
             )
             .execute(&mut transaction)
             .await?;
-            println!("{},{}", thanker_id, thanked_user_id);
+
             query!(
                 "
                     INSERT INTO recent_thanked (user_id, did_thank, at_time)
@@ -230,13 +241,25 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
         println!("thanked user = {:?}", thanked_user.id);
     }
     transaction.commit().await?;
-    if contains_at_least_one_to_recent {
-        contents.push_str(" Your message contains users you already thanked. Wait a minute before thanking them again :)")
-    }
-    //let data = ctx.data.read().await;
-    if let Err(why) = msg.channel_id.say(&ctx.http, &contents).await {
-        println!("Error sending message: {:?}", why);
-    }
+    let contents = match (mention_count,contains_at_least_one_to_recent,thanked_self, msg.mentions_me(&ctx).await?) {
+        (1,_, true,_) =>String::from( "To keep it fair, you can not thank yourself."),
+        (1,true,_,_) => String::from("Sorry, you already thanked this user not so long ago. Wait a minute before thanking him/her again"),
+        (1,_,_,true) => String::from("Thank you! I just do my best! :)"),
+        (1, false,false,false) => String::from("Thank you for letting me know that this person helped you out."),
+        (2,true,true,_) => String::from("Sorry, but you can't thank yourself and you already recently thanked the other person"),
+        (_,contains_too_recent,thanked_self, _ ) => {
+            let mut base_message = String::from("Thanks for informing me that these users helped you out!");
+            if contains_too_recent {
+                base_message.push_str(" Your message contains users you already thanked. Wait a minute before thanking them again :).")
+            }
+            if thanked_self {
+                base_message.push_str(" You can't thank yourself.")
+            }
+            base_message
+        }
+    };
+
+    msg.channel_id.say(&ctx.http, &contents).await?;
 
     Ok(())
 }
@@ -261,17 +284,18 @@ async fn top(ctx: &Context, msg: &Message) -> CommandResult {
     if is_in_incorrect_channel {
         return Ok(())
     }
-    let mut con = {
+    let (mut con, own_id) = {
         let data = ctx.data.read().await;
+        let id = i64::from(*data.get::<BotId>().expect("No bot id set"));
         let pool = data.get::<DbPool>().expect("No db pool?");
-        let con = pool.acquire().await?;
-        con
+        (pool.acquire().await?,id)
     };
     let res: Vec<(UserId, i64)> = query!(
         "SELECT user_id, times
         FROM thanked_users
+        WHERE user_id != $1
         ORDER BY times DESC
-        LIMIT 10"
+        LIMIT 10",own_id
     )
     .fetch(&mut con)
     .map(|v| v.map(|v| (UserId::from(v.user_id as u64), v.times)))

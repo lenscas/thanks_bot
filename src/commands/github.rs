@@ -1,0 +1,26 @@
+use serenity::{
+    client::Context,
+    framework::standard::{macros::command, CommandResult},
+    model::channel::Message,
+};
+use super::is_in_incorrect_channel;
+
+#[command]
+#[aliases("code", "gh")]
+#[description("Links the github link")]
+#[usage("")]
+#[example = ""]
+#[help_available]
+#[bucket = "potentially_big_output"]
+pub(crate) async fn github(ctx: &Context, msg: &Message) -> CommandResult {
+    if is_in_incorrect_channel(ctx,msg).await {
+        return Ok(());
+    }
+    msg.channel_id
+        .say(
+            &ctx.http,
+            "My code is here: <https://github.com/lenscas/thanks_bot>",
+        )
+        .await?;
+    Ok(())
+}

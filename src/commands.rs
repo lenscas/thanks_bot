@@ -1,14 +1,20 @@
 mod help;
 mod thanks;
 mod top;
+mod github;
 
 pub(crate) use help::MY_HELP;
+
 use thanks::THX_COMMAND;
 use top::TOP_COMMAND;
+use github::GITHUB_COMMAND;
 
-use serenity::{framework::standard::macros::group, model::id::UserId, prelude::TypeMapKey};
+use serenity::{framework::standard::macros::group, model::{channel::Message, id::UserId}, prelude::TypeMapKey, client::Context};
 use sqlx::PgPool;
 use std::time::SystemTime;
+use dotenv::var;
+
+pub(crate) const NON_THANKS_COMMANDS_VAR_KEY : &'static str = "OTHER_NON_THANKS_COMMANDS";
 
 fn get_time_as_unix_epoch(time: SystemTime) -> i64 {
     match time.duration_since(SystemTime::UNIX_EPOCH) {
@@ -33,5 +39,18 @@ impl TypeMapKey for DbPool {
 }
 
 #[group]
-#[commands(thx, top)]
+#[commands(thx, top,github)]
 pub(crate) struct General;
+
+async fn is_in_incorrect_channel(ctx : &Context, msg : &Message) -> bool {
+    msg
+        .channel_id
+        .name(&ctx)
+        .await
+        .map(|v| {
+            v != var(NON_THANKS_COMMANDS_VAR_KEY)
+                .expect("top channel not set")
+                .to_lowercase()
+        })
+        .unwrap_or(true)
+}

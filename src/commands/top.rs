@@ -1,4 +1,4 @@
-use super::{BotId, DbPool};
+use super::{BotId, DbPool, is_in_incorrect_channel};
 use dotenv::var;
 use prettytable::{Cell, Row, Table};
 use serenity::{
@@ -24,17 +24,8 @@ pub(crate) async fn top(ctx: &Context, msg: &Message) -> CommandResult {
         Some(x) => i64::from(x),
         None => return Ok(()),
     };
-    let is_in_incorrect_channel = msg
-        .channel_id
-        .name(&ctx)
-        .await
-        .map(|v| {
-            v != var("ALLOWED_TOP_COMMAND")
-                .expect("top channel not set")
-                .to_lowercase()
-        })
-        .unwrap_or(true);
-    if is_in_incorrect_channel {
+    
+    if is_in_incorrect_channel(ctx,msg).await {
         return Ok(());
     }
     let (mut con, own_id) = {

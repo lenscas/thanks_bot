@@ -28,6 +28,7 @@ SET default_table_access_method = heap;
 CREATE TABLE public.recent_thanked (
     user_id bigint NOT NULL,
     did_thank bigint NOT NULL,
+    server_id bigint NOT NULL,
     at_time bigint NOT NULL
 );
 
@@ -37,6 +38,7 @@ CREATE TABLE public.recent_thanked (
 
 CREATE TABLE public.thanked_users (
     user_id bigint NOT NULL,
+    server_id bigint NOT NULL,
     times bigint NOT NULL
 );
 
@@ -46,7 +48,7 @@ CREATE TABLE public.thanked_users (
 --
 
 ALTER TABLE ONLY public.recent_thanked
-    ADD CONSTRAINT recent_thanked_pk PRIMARY KEY (user_id,did_thank);
+    ADD CONSTRAINT recent_thanked_pk PRIMARY KEY (user_id,server_id,did_thank);
 
 
 --
@@ -54,7 +56,7 @@ ALTER TABLE ONLY public.recent_thanked
 --
 
 ALTER TABLE ONLY public.thanked_users
-    ADD CONSTRAINT thanked_users_pk PRIMARY KEY (user_id);
+    ADD CONSTRAINT thanked_users_pk PRIMARY KEY (user_id, server_id);
 
 
 --
@@ -62,7 +64,7 @@ ALTER TABLE ONLY public.thanked_users
 --
 
 ALTER TABLE ONLY public.recent_thanked
-    ADD CONSTRAINT recent_thanked_fk FOREIGN KEY (did_thank) REFERENCES public.thanked_users(user_id);
+    ADD CONSTRAINT recent_thanked_fk FOREIGN KEY (did_thank, server_id) REFERENCES public.thanked_users(user_id,server_id);
 
 CREATE INDEX recent_thanked_at_time_idx ON public.recent_thanked (at_time);
 CREATE INDEX thanked_users_times_idx ON public.thanked_users (times);

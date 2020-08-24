@@ -1,5 +1,28 @@
 {
   "db": "PostgreSQL",
+  "00aa827aedb51be01f2ceb1073b95f63d97680e1272c23ecf428c7326a93959c": {
+    "query": "\n            SELECT count(*) AS count \n            FROM recent_thanked\n            WHERE user_id = $1 \n            AND did_thank = $2\n            AND at_time > $3\n            AND server_id = $4\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "count",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        null
+      ]
+    }
+  },
   "0e61b94436ece5790db21415ddb6e5b96da557d9a20b4db8e7d9ea22b0657a72": {
     "query": "\n            SELECT count(*) AS count \n            FROM recent_thanked\n            WHERE user_id = $1 \n            AND did_thank = $2\n            AND at_time > $3\n            ",
     "describe": {
@@ -48,12 +71,15 @@
       ]
     }
   },
-  "2f7c1c70132808e2f6cba543f9f9e8d56c25eafdd13ee1f81fade38fbdd460ca": {
-    "query": "\n                INSERT INTO thanked_users (user_id, times)\n                VALUES($1,1) \n                ON CONFLICT (user_id) \n                DO \n                UPDATE SET times = EXCLUDED.times + 1;\n                ",
+  "228f28bc35aa52c4d5f557ff8b4ddf88e00b3d421fe54d14324587af2210cb48": {
+    "query": "\n                    INSERT INTO recent_thanked (user_id, did_thank, server_id, at_time)\n                    VALUES ($1,$2,$3,$4)\n                    ON CONFLICT ON CONSTRAINT recent_thanked_pk \n                    DO\n                    UPDATE SET at_time = $3;\n                ",
     "describe": {
       "columns": [],
       "parameters": {
         "Left": [
+          "Int8",
+          "Int8",
+          "Int8",
           "Int8"
         ]
       },
@@ -86,8 +112,21 @@
       "nullable": []
     }
   },
-  "7eea135078e6a983be682d3550a6f6d769468d0d3a941d979355c47bd2a96808": {
-    "query": "SELECT user_id, times\n        FROM thanked_users\n        ORDER BY times DESC\n        LIMIT 10",
+  "93570c4015abd60865a2246b9c6695b577cfda40498de0edf47f3dcaed4d21f5": {
+    "query": "\n                INSERT INTO thanked_users (user_id,server_id, times)\n                VALUES($1,$2,1) \n                ON CONFLICT ON CONSTRAINT thanked_users_pk \n                DO \n                UPDATE SET times = thanked_users.times + 1;\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "c1758c21dea0a590ec1aed074ca8db740ac10caca221d508c1be80373acdcf19": {
+    "query": "SELECT user_id, times\n        FROM thanked_users\n        WHERE user_id != $1\n        AND server_id = $2\n        ORDER BY times DESC\n        LIMIT 10",
     "describe": {
       "columns": [
         {
@@ -102,7 +141,10 @@
         }
       ],
       "parameters": {
-        "Left": []
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
       },
       "nullable": [
         false,
@@ -110,47 +152,12 @@
       ]
     }
   },
-  "8bf62a29ff8a1dc95f99a9a8a8f8a9c8f9fb34c6580196c6be6a7d741cfa2151": {
-    "query": "\n                INSERT INTO thanked_users (user_id, times)\n                VALUES($1,1) \n                ON CONFLICT (user_id) \n                DO \n                UPDATE SET times = EXCLUDED.times + 1\n                ",
+  "c3848edce923f10c3a34a91e5f73e6bdb0f9c687b138898429042fbf06f81f83": {
+    "query": "\n                INSERT INTO thanked_users (user_id,server_id, times)\n                VALUES($1,$2,1) \n                ON CONFLICT (user_id) \n                DO \n                UPDATE SET times = thanked_users.times + 1;\n                ",
     "describe": {
       "columns": [],
       "parameters": {
         "Left": [
-          "Int8"
-        ]
-      },
-      "nullable": []
-    }
-  },
-  "96f3afef0e4eb907a5a6784be018554e0e51f7c0180e4955f7147b70f23e9e47": {
-    "query": "\n            SELECT count(*) AS count \n            FROM recent_thanked\n            WHERE user_id = $1 \n            AND did_thank = $2\n            AND at_time < $3\n            ",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "count",
-          "type_info": "Int8"
-        }
-      ],
-      "parameters": {
-        "Left": [
-          "Int8",
-          "Int8",
-          "Int8"
-        ]
-      },
-      "nullable": [
-        null
-      ]
-    }
-  },
-  "d8aba8ab207f41968c4d0e99b6f4f833b63d979cf343110008a360579ffe7040": {
-    "query": "\n                    INSERT INTO recent_thanked (user_id, did_thank, at_time)\n                    VALUES ($1,$2,$3)\n                    ON CONFLICT(user_id,did_thank)\n                    DO\n                    UPDATE SET at_time = $3;\n                ",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Left": [
-          "Int8",
           "Int8",
           "Int8"
         ]

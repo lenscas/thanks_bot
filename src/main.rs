@@ -168,6 +168,10 @@ struct General;
 #[only_in("guild")]
 #[help_available]
 async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
+    let server_id = match msg.guild_id {
+        Some(x) => {i64::from(x)}
+        None => {return Ok(())}
+    };
     let thanking: &Vec<_> = &msg.mentions;
     let mention_count = thanking.len();
     if mention_count == 0 {
@@ -199,10 +203,12 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
             WHERE user_id = $1 
             AND did_thank = $2
             AND at_time > $3
+            AND server_id = $4
             ",
             thanker_id,
             thanked_user_id,
-            current_time_minus_one_minute
+            current_time_minus_one_minute,
+            server_id
         )
         .fetch_one(&mut transaction)
         .await?
@@ -211,27 +217,29 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
         if count == 0 {
             query!(
                 "
-                INSERT INTO thanked_users (user_id, times)
-                VALUES($1,1) 
-                ON CONFLICT (user_id) 
+                INSERT INTO thanked_users (user_id,server_id, times)
+                VALUES($1,$2,1) 
+                ON CONFLICT ON CONSTRAINT thanked_users_pk 
                 DO 
                 UPDATE SET times = thanked_users.times + 1;
                 ",
-                thanked_user_id
+                thanked_user_id,
+                server_id
             )
             .execute(&mut transaction)
             .await?;
 
             query!(
                 "
-                    INSERT INTO recent_thanked (user_id, did_thank, at_time)
-                    VALUES ($1,$2,$3)
+                    INSERT INTO recent_thanked (user_id, did_thank, server_id, at_time)
+                    VALUES ($1,$2,$3,$4)
                     ON CONFLICT ON CONSTRAINT recent_thanked_pk 
                     DO
                     UPDATE SET at_time = $3;
                 ",
                 thanker_id,
                 thanked_user_id,
+                server_id,
                 get_time_as_unix_epoch(SystemTime::now())
             )
             .execute(&mut transaction)
@@ -272,6 +280,10 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
 #[usage("")]
 #[only_in("guild")]
 async fn top(ctx: &Context, msg: &Message) -> CommandResult {
+    let server_id = match msg.guild_id {
+        Some(x) => i64::from(x),
+        None => return Ok(())
+    };
     let is_in_incorrect_channel = msg
     .channel_id
     .name(&ctx)
@@ -295,8 +307,11 @@ async fn top(ctx: &Context, msg: &Message) -> CommandResult {
         "SELECT user_id, times
         FROM thanked_users
         WHERE user_id != $1
+        AND server_id = $2
         ORDER BY times DESC
-        LIMIT 10",own_id
+        LIMIT 10",
+        own_id,
+        server_id
     )
     .fetch(&mut con)
     .map(|v| v.map(|v| (UserId::from(v.user_id as u64), v.times)))

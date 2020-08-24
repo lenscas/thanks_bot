@@ -1,11 +1,11 @@
+use super::{get_time_as_unix_epoch, DbPool};
 use serenity::{
     client::Context,
     framework::standard::{macros::command, CommandResult},
     model::channel::Message,
 };
-use super::{get_time_as_unix_epoch, DbPool};
-use std::time::{Duration, SystemTime};
 use sqlx::query;
+use std::time::{Duration, SystemTime};
 
 #[command]
 #[aliases("thanks", "thank")]

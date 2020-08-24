@@ -1,29 +1,26 @@
-
 mod commands;
 
 use async_trait::async_trait;
 use dotenv::var;
 use serenity::prelude::*;
 use serenity::{
-    framework::standard::{
-        macros::{  hook},
-        CommandResult,
-        StandardFramework,
-    },
+    framework::standard::{macros::hook, CommandResult, StandardFramework},
     model::{channel::Message, gateway::Ready},
 };
-use sqlx::{ PgPool};
+use sqlx::PgPool;
 
 use commands::MY_HELP;
 
-
-use crate::commands::{GENERAL_GROUP,BotId,DbPool};
+use crate::commands::{BotId, DbPool, GENERAL_GROUP};
 struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
-        println!("{} is connected! with id {}", ready.user.name, ready.user.id);
+        println!(
+            "{} is connected! with id {}",
+            ready.user.name, ready.user.id
+        );
         let mut data = ctx.data.write().await;
         data.insert::<BotId>(ready.user.id);
     }
@@ -77,5 +74,3 @@ async fn main() {
         println!("Client error: {:?}", why);
     }
 }
-
-

@@ -1,6 +1,12 @@
-use serenity::{client::Context, framework::standard::{Args, macros::help, HelpOptions, CommandGroup, CommandResult, help_commands}, model::{id::UserId, channel::Message}};
-use std::collections::HashSet;
 use dotenv::var;
+use serenity::{
+    client::Context,
+    framework::standard::{
+        help_commands, macros::help, Args, CommandGroup, CommandResult, HelpOptions,
+    },
+    model::{channel::Message, id::UserId},
+};
+use std::collections::HashSet;
 
 #[help]
 // This replaces the information that a user can pass

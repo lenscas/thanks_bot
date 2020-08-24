@@ -1,15 +1,15 @@
-
-use tokio::stream::StreamExt;
+use super::{BotId, DbPool};
+use dotenv::var;
+use prettytable::{Cell, Row, Table};
 use serenity::{
-    Error,
     client::Context,
     framework::standard::{macros::command, CommandResult},
-    model::{id::UserId, channel::Message}, prelude::ModelError,
+    model::{channel::Message, id::UserId},
+    prelude::ModelError,
+    Error,
 };
-use dotenv::var;
-use super::{DbPool, BotId};
 use sqlx::query;
-use prettytable::{Cell, Row, Table};
+use tokio::stream::StreamExt;
 
 #[command]
 #[bucket = "potentially_big_output"]
@@ -73,7 +73,6 @@ pub(crate) async fn top(ctx: &Context, msg: &Message) -> CommandResult {
                     x => return Err(Error::Model(x).into()),
                 },
                 x => return Err(x.into()),
-                
             },
         };
         table.add_row(Row::new(vec![

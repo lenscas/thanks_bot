@@ -1,14 +1,14 @@
+mod help;
 mod thanks;
 mod top;
-mod help;
 
-use thanks::{THX_COMMAND};
-use top::{TOP_COMMAND};
 pub(crate) use help::MY_HELP;
+use thanks::THX_COMMAND;
+use top::TOP_COMMAND;
 
-use serenity::{prelude::TypeMapKey, framework::standard::macros::group, model::id::UserId};
-use std::time::SystemTime;
+use serenity::{framework::standard::macros::group, model::id::UserId, prelude::TypeMapKey};
 use sqlx::PgPool;
+use std::time::SystemTime;
 
 fn get_time_as_unix_epoch(time: SystemTime) -> i64 {
     match time.duration_since(SystemTime::UNIX_EPOCH) {

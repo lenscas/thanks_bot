@@ -32,6 +32,12 @@ CREATE TABLE public.recent_thanked (
     at_time bigint NOT NULL
 );
 
+CREATE TABLE public.server_config (
+    server_id bigint NOT NULL,
+    time_between_thanking bigint NOT NULL
+);
+
+
 --
 -- Name: thanked_users; Type: TABLE; Schema: public; Owner: -
 --
@@ -50,6 +56,8 @@ CREATE TABLE public.thanked_users (
 ALTER TABLE ONLY public.recent_thanked
     ADD CONSTRAINT recent_thanked_pk PRIMARY KEY (user_id,server_id,did_thank);
 
+ALTER TABLE ONLY public.server_config
+    ADD CONSTRAINT server_config_pk PRIMARY KEY (server_id);
 
 --
 -- Name: thanked_users thanked_users_pk; Type: CONSTRAINT; Schema: public; Owner: -

@@ -6,6 +6,7 @@ use serenity::{
 };
 use sqlx::query;
 use std::time::{Duration, SystemTime};
+use std::convert::TryFrom;
 
 #[command]
 #[aliases("thanks", "thank")]
@@ -37,8 +38,15 @@ pub(crate) async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
         pool.begin().await?
     };
 
+
+    let time_between_thanking = query!(
+        "SELECT time_between_thanking
+        FROM server_config
+        WHERE server_id=$1",
+        server_id
+    ).fetch_optional(&mut transaction).await?.map(|v|u64::try_from(v.time_between_thanking)).unwrap_or(Ok(1))? * 60;
     let current_time_minus_one_minute =
-        get_time_as_unix_epoch(SystemTime::now() - Duration::new(60, 0));
+        get_time_as_unix_epoch(SystemTime::now() - Duration::new(time_between_thanking, 0));
 
     let thanker_id = i64::from(msg.author.id);
     let mut contains_at_least_one_to_recent = false;

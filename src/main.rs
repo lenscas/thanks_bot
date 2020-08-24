@@ -11,7 +11,7 @@ use sqlx::PgPool;
 
 use commands::MY_HELP;
 
-use crate::commands::{BotId, DbPool, GENERAL_GROUP};
+use crate::commands::{BotId, DbPool, GENERAL_GROUP,CONFIG_GROUP};
 struct Handler;
 
 #[async_trait]
@@ -54,8 +54,9 @@ async fn main() {
         })
         .help(&MY_HELP)
         .group(&GENERAL_GROUP)
+        .group(&CONFIG_GROUP)
         .bucket("potentially_big_output", |b| {
-            b.delay(5).time_span(30).limit(2)
+            b.delay(10).time_span(120).limit(2)
         })
         .await
         .after(after);

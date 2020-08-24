@@ -2,12 +2,14 @@ mod help;
 mod thanks;
 mod top;
 mod github;
+mod config;
 
 pub(crate) use help::MY_HELP;
 
 use thanks::THX_COMMAND;
 use top::TOP_COMMAND;
-use github::GITHUB_COMMAND;
+use github::{GITHUB_COMMAND,BUG_COMMAND};
+use config::SET_DELAY_COMMAND;
 
 use serenity::{framework::standard::macros::group, model::{channel::Message, id::UserId}, prelude::TypeMapKey, client::Context};
 use sqlx::PgPool;
@@ -39,8 +41,12 @@ impl TypeMapKey for DbPool {
 }
 
 #[group]
-#[commands(thx, top,github)]
+#[commands(thx, top,github, bug)]
 pub(crate) struct General;
+
+#[group]
+#[commands(set_delay)]
+pub(crate) struct Config;
 
 async fn is_in_incorrect_channel(ctx : &Context, msg : &Message) -> bool {
     msg

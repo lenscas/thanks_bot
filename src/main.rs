@@ -194,6 +194,7 @@ async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
     for thanked_user in thanking {
         if thanked_user.id == msg.author.id {
             thanked_self=true;
+            continue;
         }
         let thanked_user_id = i64::from(thanked_user.id);
         let count = query!(

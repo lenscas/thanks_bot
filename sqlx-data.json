@@ -1,0 +1,161 @@
+{
+  "db": "PostgreSQL",
+  "0e61b94436ece5790db21415ddb6e5b96da557d9a20b4db8e7d9ea22b0657a72": {
+    "query": "\n            SELECT count(*) AS count \n            FROM recent_thanked\n            WHERE user_id = $1 \n            AND did_thank = $2\n            AND at_time > $3\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "count",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        null
+      ]
+    }
+  },
+  "1a044b0aaffa9bc4d4db76cb23833aef50bbbe604f75f309ce645b4362def6ec": {
+    "query": "SELECT user_id, times\n        FROM thanked_users\n        WHERE user_id != $1\n        ORDER BY times DESC\n        LIMIT 10",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "user_id",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "times",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  },
+  "2f7c1c70132808e2f6cba543f9f9e8d56c25eafdd13ee1f81fade38fbdd460ca": {
+    "query": "\n                INSERT INTO thanked_users (user_id, times)\n                VALUES($1,1) \n                ON CONFLICT (user_id) \n                DO \n                UPDATE SET times = EXCLUDED.times + 1;\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "57d74a9dc469148550cfb303c4aca078131a33babf911ed61e68b65a54bedee9": {
+    "query": "\n                INSERT INTO thanked_users (user_id, times)\n                VALUES($1,1) \n                ON CONFLICT (user_id) \n                DO \n                UPDATE SET times = thanked_users.times + 1;\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "79986af20d44f0cff60d4d41d9b5fafbe0afdbcbc5c4c4cb5c3b83a51de43324": {
+    "query": "\n                    INSERT INTO recent_thanked (user_id, did_thank, at_time)\n                    VALUES ($1,$2,$3)\n                    ON CONFLICT ON CONSTRAINT recent_thanked_pk \n                    DO\n                    UPDATE SET at_time = $3;\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "7eea135078e6a983be682d3550a6f6d769468d0d3a941d979355c47bd2a96808": {
+    "query": "SELECT user_id, times\n        FROM thanked_users\n        ORDER BY times DESC\n        LIMIT 10",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "user_id",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "times",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": []
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  },
+  "8bf62a29ff8a1dc95f99a9a8a8f8a9c8f9fb34c6580196c6be6a7d741cfa2151": {
+    "query": "\n                INSERT INTO thanked_users (user_id, times)\n                VALUES($1,1) \n                ON CONFLICT (user_id) \n                DO \n                UPDATE SET times = EXCLUDED.times + 1\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "96f3afef0e4eb907a5a6784be018554e0e51f7c0180e4955f7147b70f23e9e47": {
+    "query": "\n            SELECT count(*) AS count \n            FROM recent_thanked\n            WHERE user_id = $1 \n            AND did_thank = $2\n            AND at_time < $3\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "count",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        null
+      ]
+    }
+  },
+  "d8aba8ab207f41968c4d0e99b6f4f833b63d979cf343110008a360579ffe7040": {
+    "query": "\n                    INSERT INTO recent_thanked (user_id, did_thank, at_time)\n                    VALUES ($1,$2,$3)\n                    ON CONFLICT(user_id,did_thank)\n                    DO\n                    UPDATE SET at_time = $3;\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  }
+}

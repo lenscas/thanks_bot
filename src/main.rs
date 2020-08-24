@@ -16,6 +16,7 @@ use std::{
     time::{Duration, SystemTime},
 };
 use tokio::stream::StreamExt;
+use prettytable::{Cell,Row,Table};
 
 // The framework provides two built-in help commands for you to use.
 // But you can also make your own customized help command that forwards
@@ -302,8 +303,11 @@ async fn top(ctx: &Context, msg: &Message) -> CommandResult {
     .collect::<Result<_, _>>()
     .await?;
 
-    let mut message = String::from("The top most thanked users are\n```name\tamount\n");
-
+    let header_row = Row::new(vec![Cell::new("name"),Cell::new("times")]);
+    let mut table = Table::new();
+    table.set_format(*prettytable::format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
+    table.set_titles(header_row);
+    
     for (user_id, times) in res {
         let name = match (user_id.to_user(&ctx).await, msg.guild_id) {
             (Ok(user), Some(guild)) => user.nick_in(&ctx, guild).await.unwrap_or(user.name),
@@ -316,9 +320,13 @@ async fn top(ctx: &Context, msg: &Message) -> CommandResult {
                 x => return Err(x.into()),
             },
         };
-        message.push_str(&format!("{:0}\t{:1}\n", name, times));
+        table.add_row(Row::new(vec![Cell::new(&name), Cell::new(&times.to_string())]));
     }
-    message.push_str("```");
+
+    let mut message = String::from("The top most thanked users are\n");
+    message.push_str("```\n");
+    message.push_str(&table.to_string());
+    message.push_str("\n```");
     msg.channel_id.say(&ctx.http, message).await?;
 
     Ok(())

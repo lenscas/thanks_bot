@@ -16,7 +16,7 @@ Currently, it has only 3 commands.:
 
 - [sqlx-cli](https://crates.io/crates/sqlx-cli), this helps create and update the database.
 
-- [postgresql]](https://www.postgresql.org/download/), this is the database used by the server.
+- [postgresql](https://www.postgresql.org/download/), this is the database used by the server.
 
 # Setup
 1. rename .env.example to .env

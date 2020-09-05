@@ -23,13 +23,12 @@ pub(crate) async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
     let thanking: &Vec<_> = &msg.mentions;
     let mention_count = thanking.len();
     if mention_count == 0 {
-    let _ = discord.add_reaction(&msg.channel.id, msg.id, ReactionEmoji::Unicode("✅".to_string));
         msg.channel_id
             .say(
                 &ctx.http,
                 "Please ping the user in your thank message so I know who you are thanking.",
             )
-    
+    let _ = discord.add_reaction(&msg.channel.id, msg.id, ReactionEmoji::Unicode("✅".to_string()));
             .await?;
         return Ok(());
     }

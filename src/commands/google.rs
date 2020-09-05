@@ -12,7 +12,7 @@ use serenity::{
 #[example = ""]
 #[help_available]
 #[bucket = "potentially_big_output_ever_channel"]
-pub(crate) async fn codeblock(ctx: &Context, msg: &Message) -> CommandResult {
+pub(crate) async fn google(ctx: &Context, msg: &Message) -> CommandResult {
     msg.channel_id
         .say(
             &ctx.http,

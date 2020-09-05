@@ -6,8 +6,8 @@ use serenity::{
 };
 
 #[command]
-#[aliases("paste", "code")]
-#[description("Teaches users how to paste code neatly")]
+#[aliases("ask", "questions")]
+#[description("Teaches how to ask good questions")]
 #[usage("")]
 #[example = ""]
 #[help_available]

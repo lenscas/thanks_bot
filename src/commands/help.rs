@@ -12,7 +12,7 @@ use std::collections::HashSet;
 // This replaces the information that a user can pass
 // a command-name as argument to gain specific information about it.
 #[individual_command_tip = "Hello! GameDev!\n\
-I'm here to keep track of who is helpfull so the mods can reward them with a special role.\n\
+I'm here to keep track of who is helpful so the mods can reward them with a special role.\n\
 Did you recently get help and want to show your appreciation? Use the !thx command.\n\
 If you want more information about a specific command, just pass the command as argument."]
 // Some arguments require a `{}` in order to replace it with contextual information.

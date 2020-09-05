@@ -7,7 +7,7 @@ use super::is_in_incorrect_channel;
 
 #[command]
 #[aliases("paste", "code")]
-#[description("Teches users how to paste code neatly")]
+#[description("Teaches users how to paste code neatly")]
 #[usage("")]
 #[example = ""]
 #[help_available]
@@ -21,7 +21,7 @@ pub(crate) async fn codeblock(ctx: &Context, msg: &Message) -> CommandResult {
             &ctx.http,
             "**Use Codeblocks To Paste Your Code**
 
-              If the code is larger than 2,000 characters, then consider using a service such as https://paste.myst.rs/
+              If the code is larger than 2,000 characters, then consider using a service such as <https://paste.myst.rs/>
 
               \``` scripting language 
                   //your code here

@@ -30,10 +30,3 @@ pub(crate) async fn codeblock(ctx: &Context, msg: &Message) -> CommandResult {
         .await?;
     Ok(())
 }
-#[command]
-#[aliases("NO!", "BROKEN", "PLEASE_FIX")]
-#[description("Links the site to place bug reports")]
-#[usage("")]
-#[example = ""]
-#[help_available]
-#[bucket = "potentially_big_output"]

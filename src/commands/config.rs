@@ -19,11 +19,11 @@ use sqlx::query;
 pub(crate) async fn set_delay(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let guild_id = match msg.guild_id {
         Some(x) => x,
-        None => return Ok(())
+        None => return Ok(()),
     };
     let guild = match msg.guild(&ctx).await {
         Some(x) => x,
-        None => return Ok(())
+        None => return Ok(()),
     };
     let mod_role = guild.role_by_name("Moderator");
     let thank_bot_mod_role = guild.role_by_name("ThankBotManager");
@@ -32,12 +32,12 @@ pub(crate) async fn set_delay(ctx: &Context, msg: &Message, mut args: Args) -> C
             msg.author.has_role(&ctx, guild_id, x).await?
                 || msg.author.has_role(&ctx, guild_id, y).await?
         }
-        (Some(x),None) => msg.author.has_role(&ctx, guild_id, x).await?,
-        (None,Some(y)) => msg.author.has_role(&ctx, guild_id, y).await?,
-        (None,None) => false
+        (Some(x), None) => msg.author.has_role(&ctx, guild_id, x).await?,
+        (None, Some(y)) => msg.author.has_role(&ctx, guild_id, y).await?,
+        (None, None) => false,
     };
     if !is_allowed {
-        return Ok(())
+        return Ok(());
     }
 
     let mut transaction = {

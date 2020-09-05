@@ -1,22 +1,27 @@
+mod config;
+mod github;
 mod help;
 mod thanks;
 mod top;
-mod github;
-mod config;
 
 pub(crate) use help::MY_HELP;
 
+use config::SET_DELAY_COMMAND;
+use github::{BUG_COMMAND, GITHUB_COMMAND};
 use thanks::THX_COMMAND;
 use top::TOP_COMMAND;
-use github::{GITHUB_COMMAND,BUG_COMMAND};
-use config::SET_DELAY_COMMAND;
 
-use serenity::{framework::standard::macros::group, model::{channel::Message, id::UserId}, prelude::TypeMapKey, client::Context};
+use dotenv::var;
+use serenity::{
+    client::Context,
+    framework::standard::macros::group,
+    model::{channel::Message, id::UserId},
+    prelude::TypeMapKey,
+};
 use sqlx::PgPool;
 use std::time::SystemTime;
-use dotenv::var;
 
-pub(crate) const NON_THANKS_COMMANDS_VAR_KEY : &'static str = "OTHER_NON_THANKS_COMMANDS";
+pub(crate) const NON_THANKS_COMMANDS_VAR_KEY: &'static str = "OTHER_NON_THANKS_COMMANDS";
 
 fn get_time_as_unix_epoch(time: SystemTime) -> i64 {
     match time.duration_since(SystemTime::UNIX_EPOCH) {
@@ -41,16 +46,15 @@ impl TypeMapKey for DbPool {
 }
 
 #[group]
-#[commands(thx, top,github, bug)]
+#[commands(thx, top, github, bug)]
 pub(crate) struct General;
 
 #[group]
 #[commands(set_delay)]
 pub(crate) struct Config;
 
-async fn is_in_incorrect_channel(ctx : &Context, msg : &Message) -> bool {
-    msg
-        .channel_id
+async fn is_in_incorrect_channel(ctx: &Context, msg: &Message) -> bool {
+    msg.channel_id
         .name(&ctx)
         .await
         .map(|v| {

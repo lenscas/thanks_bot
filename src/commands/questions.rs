@@ -26,7 +26,7 @@ Make sure you have tried using google to find an answer to your question and let
 -Tell us what tools/engine/etc you're using, we don't know if you're using Unity, UE4, godot, or your own custom tools.
 -Send questions in accessible, standard forms.  (Cellphone pictures of your computer screen are hard to read at best)
             
-__Code:_ please use a codeblock (!codeblock)
+__Code:__ please use a codeblock (!codeblock)
 __Error messages:__ Screenshot or full verbatim
             
 Explain both your indented outcome and what is actually happening.

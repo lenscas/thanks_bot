@@ -1,9 +1,9 @@
+use super::is_in_incorrect_channel;
 use serenity::{
     client::Context,
     framework::standard::{macros::command, CommandResult},
     model::channel::Message,
 };
-use super::is_in_incorrect_channel;
 
 #[command]
 #[aliases("code", "gh")]
@@ -13,7 +13,7 @@ use super::is_in_incorrect_channel;
 #[help_available]
 #[bucket = "potentially_big_output"]
 pub(crate) async fn github(ctx: &Context, msg: &Message) -> CommandResult {
-    if is_in_incorrect_channel(ctx,msg).await {
+    if is_in_incorrect_channel(ctx, msg).await {
         return Ok(());
     }
     msg.channel_id
@@ -32,7 +32,7 @@ pub(crate) async fn github(ctx: &Context, msg: &Message) -> CommandResult {
 #[help_available]
 #[bucket = "potentially_big_output"]
 pub(crate) async fn bug(ctx: &Context, msg: &Message) -> CommandResult {
-    if is_in_incorrect_channel(ctx,msg).await {
+    if is_in_incorrect_channel(ctx, msg).await {
         return Ok(());
     }
     msg.channel_id

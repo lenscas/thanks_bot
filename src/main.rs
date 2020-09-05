@@ -11,7 +11,7 @@ use sqlx::PgPool;
 
 use commands::MY_HELP;
 
-use crate::commands::{BotId, DbPool, GENERAL_GROUP,CONFIG_GROUP};
+use crate::commands::{BotId, DbPool, CONFIG_GROUP, GENERAL_GROUP};
 struct Handler;
 
 #[async_trait]

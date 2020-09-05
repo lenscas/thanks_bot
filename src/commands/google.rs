@@ -6,8 +6,8 @@ use serenity::{
 };
 
 #[command]
-#[aliases("browser", "google")]
-#[description("Reminds users that google exists")]
+#[aliases("paste", "code")]
+#[description("Teaches users how to paste code neatly")]
 #[usage("")]
 #[example = ""]
 #[help_available]
@@ -16,7 +16,7 @@ pub(crate) async fn codeblock(ctx: &Context, msg: &Message) -> CommandResult {
     msg.channel_id
         .say(
             &ctx.http,
-"Looks like something <https://www.google.com/> would know!",
+            "Looks like something <https://www.google.com/> would know!",
         )
         .await?;
     Ok(())

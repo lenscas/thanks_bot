@@ -21,7 +21,7 @@ pub(crate) async fn codeblock(ctx: &Context, msg: &Message) -> CommandResult {
             &ctx.http,
             "**Use Codeblocks To Paste Your Code**
 
-              to do a codeblock, simply do 
+              If the code is larger than 2,000 characters, then consider using a service such as https://paste.myst.rs/
 
               \``` scripting language 
                   //your code here

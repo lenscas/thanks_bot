@@ -27,6 +27,7 @@ Make sure you have tried using google to find an answer to your question and let
 -Send questions in accessible, standard forms.  (Cellphone pictures of your computer screen are hard to read at best)
             
 __Code:__ please use a codeblock (!codeblock)
+
 __Error messages:__ Screenshot or full verbatim
             
 Explain both your indented outcome and what is actually happening.

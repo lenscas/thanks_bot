@@ -1,17 +1,17 @@
+mod codeblock;
 mod config;
 mod github;
 mod help;
 mod thanks;
 mod top;
-mod codeblock;
 
 pub(crate) use help::MY_HELP;
 
+use codeblock::CODEBLOCK_COMMAND;
 use config::SET_DELAY_COMMAND;
 use github::{BUG_COMMAND, GITHUB_COMMAND};
 use thanks::THX_COMMAND;
 use top::TOP_COMMAND;
-use codeblock::CODEBLOCK_COMMAND;
 
 use dotenv::var;
 use serenity::{
@@ -23,7 +23,7 @@ use serenity::{
 use sqlx::PgPool;
 use std::time::SystemTime;
 
-pub(crate) const NON_THANKS_COMMANDS_VAR_KEY:  &str = "OTHER_NON_THANKS_COMMANDS";
+pub(crate) const NON_THANKS_COMMANDS_VAR_KEY: &str = "OTHER_NON_THANKS_COMMANDS";
 
 fn get_time_as_unix_epoch(time: SystemTime) -> i64 {
     match time.duration_since(SystemTime::UNIX_EPOCH) {
@@ -48,7 +48,7 @@ impl TypeMapKey for DbPool {
 }
 
 #[group]
-#[commands(thx, top,github, bug,codeblock)]
+#[commands(thx, top, github, bug, codeblock)]
 pub(crate) struct General;
 
 #[group]

@@ -59,6 +59,10 @@ async fn main() {
             b.delay(10).time_span(120).limit(2)
         })
         .await
+        .bucket("potentially_big_output_ever_channel", |b| {
+            b.delay(30).time_span(120).limit(2)
+        })
+        .await
         .after(after);
     let mut client = Client::new(&discord_token)
         .event_handler(Handler)

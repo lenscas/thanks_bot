@@ -1,4 +1,3 @@
-use super::is_in_incorrect_channel;
 use serenity::{
     client::Context,
     framework::standard::{macros::command, CommandResult},
@@ -20,7 +19,7 @@ pub(crate) async fn codeblock(ctx: &Context, msg: &Message) -> CommandResult {
 
 If the code is larger than 2,000 characters, then consider using a service such as <https://paste.myst.rs/>
 
-\\``` scripting language 
+\\``` scripting language
     //your code here
 \\```",
         )

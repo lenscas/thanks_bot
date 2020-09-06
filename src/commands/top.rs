@@ -1,5 +1,4 @@
 use super::{is_in_incorrect_channel, BotId, DbPool};
-use dotenv::var;
 use prettytable::{Cell, Row, Table};
 use serenity::{
     client::Context,

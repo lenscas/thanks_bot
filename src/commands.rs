@@ -16,6 +16,7 @@ use codeblock::CODEBLOCK_COMMAND;
 use config::SET_DELAY_COMMAND;
 use github::{BUG_COMMAND, GITHUB_COMMAND};
 use google::GOOGLE_COMMAND;
+use learnprogramming::LEARNPROGRAMMING_COMMAND;
 use questions::QUESTIONS_COMMAND;
 use thanks::THX_COMMAND;
 use top::TOP_COMMAND;

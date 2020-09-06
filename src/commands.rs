@@ -1,14 +1,17 @@
+mod bam;
 mod codeblock;
 mod config;
 mod github;
 mod google;
 mod help;
+mod learnprogramming;
 mod questions;
 mod thanks;
 mod top;
 
 pub(crate) use help::MY_HELP;
 
+use bam::BAM_COMMAND;
 use codeblock::CODEBLOCK_COMMAND;
 use config::SET_DELAY_COMMAND;
 use github::{BUG_COMMAND, GITHUB_COMMAND};
@@ -52,7 +55,7 @@ impl TypeMapKey for DbPool {
 }
 
 #[group]
-#[commands(thx, top, github, bug, codeblock, google, questions)]
+#[commands(thx, top, github, bug, codeblock, google, questions, bam, learnprogramming)]
 pub(crate) struct General;
 
 #[group]

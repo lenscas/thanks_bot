@@ -23,21 +23,6 @@
       ]
     }
   },
-  "228f28bc35aa52c4d5f557ff8b4ddf88e00b3d421fe54d14324587af2210cb48": {
-    "query": "\n                    INSERT INTO recent_thanked (user_id, did_thank, server_id, at_time)\n                    VALUES ($1,$2,$3,$4)\n                    ON CONFLICT ON CONSTRAINT recent_thanked_pk \n                    DO\n                    UPDATE SET at_time = $3;\n                ",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Left": [
-          "Int8",
-          "Int8",
-          "Int8",
-          "Int8"
-        ]
-      },
-      "nullable": []
-    }
-  },
   "487dcc03d5aa88d56792ff02d14524d0111d62d1699057fc9c67d4be7621633a": {
     "query": "SELECT time_between_thanking\n        FROM server_config\n        WHERE server_id=$1",
     "describe": {
@@ -64,6 +49,21 @@
       "columns": [],
       "parameters": {
         "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "7615b1d38f8231692abc957ed8367917ef6623181e418049c7cefcefda2c4cdb": {
+    "query": "\n                    INSERT INTO recent_thanked (user_id, did_thank, server_id, at_time)\n                    VALUES ($1,$2,$3,$4)\n                    ON CONFLICT ON CONSTRAINT recent_thanked_pk \n                    DO\n                    UPDATE SET at_time = $4;\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
           "Int8",
           "Int8"
         ]

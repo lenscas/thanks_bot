@@ -100,7 +100,7 @@ pub(crate) async fn thx(ctx: &Context, msg: &Message) -> CommandResult {
                     VALUES ($1,$2,$3,$4)
                     ON CONFLICT ON CONSTRAINT recent_thanked_pk 
                     DO
-                    UPDATE SET at_time = $3;
+                    UPDATE SET at_time = $4;
                 ",
                 thanker_id,
                 thanked_user_id,

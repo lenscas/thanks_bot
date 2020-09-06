@@ -1,4 +1,3 @@
-mod bam;
 mod codeblock;
 mod config;
 mod github;

@@ -24,9 +24,9 @@ impl From<String> for ErrorStr {
 #[command]
 #[allowed_roles("Moderator", "ThankBotManager")]
 #[aliases("del", "remove", "be_gone")]
-#[description("Removes X amount of messages.")]
+#[description("Removes X amount of messages that are less than 2 weeks old.")]
 #[usage("{amount of messages to be removed}")]
-#[example = "100000"]
+#[example = "5"]
 #[help_available]
 #[only_in("guild")]
 pub(crate) async fn delete(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {

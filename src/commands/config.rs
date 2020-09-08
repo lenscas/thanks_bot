@@ -1,4 +1,4 @@
-use super::DbPool;
+use super::{moderator_only, DbPool};
 use serenity::{
     client::Context,
     framework::standard::{macros::command, Args, CommandResult},
@@ -17,26 +17,12 @@ use sqlx::query;
 #[help_available]
 #[only_in("guild")]
 pub(crate) async fn set_delay(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let guild_id = match msg.guild_id {
-        Some(x) => x,
-        None => return Ok(()),
-    };
     let guild = match msg.guild(&ctx).await {
         Some(x) => x,
         None => return Ok(()),
     };
-    let mod_role = guild.role_by_name("Moderator");
-    let thank_bot_mod_role = guild.role_by_name("ThankBotManager");
-    let is_allowed = match (mod_role, thank_bot_mod_role) {
-        (Some(x), Some(y)) => {
-            msg.author.has_role(&ctx, guild_id, x).await?
-                || msg.author.has_role(&ctx, guild_id, y).await?
-        }
-        (Some(x), None) => msg.author.has_role(&ctx, guild_id, x).await?,
-        (None, Some(y)) => msg.author.has_role(&ctx, guild_id, y).await?,
-        (None, None) => false,
-    };
-    if !is_allowed {
+
+    if !moderator_only(ctx, &guild, &msg.author).await? {
         return Ok(());
     }
 

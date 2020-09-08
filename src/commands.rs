@@ -1,5 +1,6 @@
 mod codeblock;
 mod config;
+mod delete;
 mod github;
 mod google;
 mod help;
@@ -12,6 +13,7 @@ pub(crate) use help::MY_HELP;
 
 use codeblock::CODEBLOCK_COMMAND;
 use config::SET_DELAY_COMMAND;
+use delete::DELETE_COMMAND;
 use github::{BUG_COMMAND, GITHUB_COMMAND};
 use google::GOOGLE_COMMAND;
 use learnprogramming::LEARNPROGRAMMING_COMMAND;
@@ -22,8 +24,8 @@ use top::TOP_COMMAND;
 use dotenv::var;
 use serenity::{
     client::Context,
-    framework::standard::macros::group,
-    model::{channel::Message, id::UserId},
+    framework::standard::{macros::group, CommandError},
+    model::{channel::Message, guild::Guild, id::UserId, prelude::User},
     prelude::TypeMapKey,
 };
 use sqlx::PgPool;
@@ -58,7 +60,7 @@ impl TypeMapKey for DbPool {
 pub(crate) struct General;
 
 #[group]
-#[commands(set_delay)]
+#[commands(set_delay, delete)]
 pub(crate) struct Config;
 
 async fn is_in_incorrect_channel(ctx: &Context, msg: &Message) -> bool {
@@ -71,4 +73,21 @@ async fn is_in_incorrect_channel(ctx: &Context, msg: &Message) -> bool {
                 .to_lowercase()
         })
         .unwrap_or(true)
+}
+pub(crate) async fn moderator_only(
+    ctx: &Context,
+    guild: &Guild,
+    author: &User,
+) -> Result<bool, CommandError> {
+    let guild_id = guild.id;
+    let mod_role = guild.role_by_name("Moderator");
+    let thank_bot_mod_role = guild.role_by_name("ThankBotManager");
+    Ok(match (mod_role, thank_bot_mod_role) {
+        (Some(x), Some(y)) => {
+            author.has_role(&ctx, guild_id, x).await? || author.has_role(&ctx, guild_id, y).await?
+        }
+        (Some(x), None) => author.has_role(&ctx, guild_id, x).await?,
+        (None, Some(y)) => author.has_role(&ctx, guild_id, y).await?,
+        (None, None) => false,
+    })
 }

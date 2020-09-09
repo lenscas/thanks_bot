@@ -129,17 +129,21 @@ async fn check_deleted_message(
         SELECT 
             author_id,content 
         FROM message_content
-        WHERE 0 < (
-            SELECT count(*) AS role_count
-            FROM pinged_roles 
-            WHERE message_id = $1
-            AND server_id = $2
-        )
-        OR 0 < (
-            SELECT count(*) AS user_count
-            FROM pinged_users 
-            WHERE message_id = $1
-            AND server_id = $2
+        WHERE message_id = $1
+        AND server_id = $2
+        AND (
+            0 < (
+                SELECT count(*) AS role_count
+                FROM pinged_roles 
+                WHERE message_id = $1
+                AND server_id = $2
+            )
+            OR 0 < (
+                SELECT count(*) AS user_count
+                FROM pinged_users 
+                WHERE message_id = $1
+                AND server_id = $2
+            )
         )
     ",
         i64::from(message_id),

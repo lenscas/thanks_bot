@@ -23,8 +23,8 @@
       ]
     }
   },
-  "228f28bc35aa52c4d5f557ff8b4ddf88e00b3d421fe54d14324587af2210cb48": {
-    "query": "\n                    INSERT INTO recent_thanked (user_id, did_thank, server_id, at_time)\n                    VALUES ($1,$2,$3,$4)\n                    ON CONFLICT ON CONSTRAINT recent_thanked_pk \n                    DO\n                    UPDATE SET at_time = $3;\n                ",
+  "0f8daf3d5170faaa733edd86bd83625d7954f8839d4de21bf4558b8efc5d8e04": {
+    "query": "INSERT INTO message_content (message_id, server_id, at_time, content) VALUES($1,$2,$3,$4)",
     "describe": {
       "columns": [],
       "parameters": {
@@ -32,10 +32,71 @@
           "Int8",
           "Int8",
           "Int8",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "2240773121ecfc27a3952bb5da43fcb3d5cdd09aa7d92b33fea2b51d813e4ad6": {
+    "query": "INSERT INTO pinged_roles (role_id,message_id,server_id) VALUES ($1,$2,$3)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
           "Int8"
         ]
       },
       "nullable": []
+    }
+  },
+  "2a79d9ab89a12329cf9a01283a34d01df3c0b86d02882d348e4dce734c31df90": {
+    "query": "INSERT INTO pinged_users (user_id,message_id,server_id) VALUES ($1,$2,$3)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "390573789acf850dbd00dbaa2ee2a41aa3b8451fd36daf02854f1c50192cba15": {
+    "query": "DELETE FROM message_content\n        CASCADE\n        WHERE at_time < $1",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "4056db7d5adfd5ca8fcdb6481018ed9b6c3048fb30bc433a7c59e3a1bfe3c7cf": {
+    "query": "\n        SELECT \n            content \n        FROM message_content\n        WHERE 0 < (\n            SELECT count(*) AS role_count\n            FROM pinged_roles \n            WHERE message_id = $1\n            AND server_id = $2\n        )\n        OR 0 < (\n            SELECT count(*) AS user_count\n            FROM pinged_users \n            WHERE message_id = $1\n            AND server_id = $2\n        )\n    ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "content",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false
+      ]
     }
   },
   "487dcc03d5aa88d56792ff02d14524d0111d62d1699057fc9c67d4be7621633a": {
@@ -50,6 +111,27 @@
       ],
       "parameters": {
         "Left": [
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "4ef2da01629b9de744e9583746c53af064bf0f84391394f5c61442267981d51b": {
+    "query": "\n        SELECT content \n        FROM message_content\n        WHERE 0 < (\n            SELECT count(*) AS role_count\n            FROM pinged_roles \n            WHERE message_id = $1\n            AND server_id = $2\n        )\n        OR 0 < (\n            SELECT count(*) AS user_count\n            FROM pinged_users \n            WHERE message_id = $1\n            AND server_id = $2\n        )\n    ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "content",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
           "Int8"
         ]
       },
@@ -86,6 +168,67 @@
       "nullable": []
     }
   },
+  "7ca6952a835980760749057fa4f3bc8012c2f49750c49ad176366d644c033f44": {
+    "query": "\n        SELECT content \n        FROM message_content\n        WHERE 0 < (\n            SELECT count(*) AS role_count\n            FROM pinged_roles \n            WHERE message_id = 1\n            AND server_id = 2\n        )\n        OR 0 < (\n            SELECT count(*) AS user_count\n            FROM pinged_users \n            WHERE message_id = 1\n            AND server_id = 2\n        )\n    ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "content",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": []
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "7cf5fadd0dd7d5b23682f79bfee5b8795edc28957d84b464ede0b3fea6b8523c": {
+    "query": "INSERT INTO message_content (author_id,message_id, server_id, at_time, content) VALUES($1,$2,$3,$4,$5)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
+          "Int8",
+          "Int8",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "82651e13fbf8cbddd9dfa0bc7523f315b84a8258f103d7272fe16a4fa37d76d7": {
+    "query": "\n        SELECT \n            author_id,content \n        FROM message_content\n        WHERE 0 < (\n            SELECT count(*) AS role_count\n            FROM pinged_roles \n            WHERE message_id = $1\n            AND server_id = $2\n        )\n        OR 0 < (\n            SELECT count(*) AS user_count\n            FROM pinged_users \n            WHERE message_id = $1\n            AND server_id = $2\n        )\n    ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "author_id",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "content",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  },
   "93570c4015abd60865a2246b9c6695b577cfda40498de0edf47f3dcaed4d21f5": {
     "query": "\n                INSERT INTO thanked_users (user_id,server_id, times)\n                VALUES($1,$2,1) \n                ON CONFLICT ON CONSTRAINT thanked_users_pk \n                DO \n                UPDATE SET times = thanked_users.times + 1;\n                ",
     "describe": {
@@ -97,6 +240,24 @@
         ]
       },
       "nullable": []
+    }
+  },
+  "bc709079355b1f0de52833fb2b8814629e9354d52150481ec13bbf199b45d9ee": {
+    "query": "\n    SELECT content \n    FROM message_content\n    WHERE 0 < (\n        SELECT count(*) AS role_count\n        FROM pinged_roles \n        WHERE message_id = 1\n        AND server_id = 2\n    )\n    OR 0 < (\n        SELECT count(*) AS user_count\n        FROM pinged_users \n        WHERE message_id = 1\n        AND server_id = 2\n    )\n    ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "content",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": []
+      },
+      "nullable": [
+        false
+      ]
     }
   },
   "c1758c21dea0a590ec1aed074ca8db740ac10caca221d508c1be80373acdcf19": {
@@ -124,6 +285,16 @@
         false,
         false
       ]
+    }
+  },
+  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855": {
+    "query": "",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": []
+      },
+      "nullable": []
     }
   }
 }

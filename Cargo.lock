@@ -1661,6 +1661,7 @@ dependencies = [
  "async-trait",
  "chrono",
  "dotenv",
+ "futures",
  "prettytable-rs",
  "serde_json",
  "serenity",

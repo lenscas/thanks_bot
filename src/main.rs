@@ -1,11 +1,11 @@
 mod commands;
 mod logger;
 
-use std::{ time::Duration};
+use std::time::Duration;
 
 use async_trait::async_trait;
 use dotenv::var;
-use logger::{insert_message, cleanup_db};
+use logger::{cleanup_db, insert_message};
 use serenity::{
     framework::standard::{macros::hook, CommandResult, StandardFramework},
     model::{channel::Message, gateway::Ready},
@@ -185,7 +185,6 @@ async fn main() {
         .await
         .expect("Couldn't connect to database");
     let pool_db_cleanup = pool.clone();
-    
 
     let framework = StandardFramework::new()
         .configure(|c| {
@@ -218,14 +217,14 @@ async fn main() {
         let mut data = client.data.write().await;
         data.insert::<DbPool>(pool);
     }
-    
-    let client_thread =  async {
+
+    let client_thread = async {
         if let Err(why) = client.start().await {
             println!("Client error: {:?}", why);
         }
     };
 
-    let cleanup_thread = tokio::time::interval(Duration::from_secs(1800)).for_each( |_| async {
+    let cleanup_thread = tokio::time::interval(Duration::from_secs(1800)).for_each(|_| async {
         println!("Start cleanup db");
         match cleanup_db(&pool_db_cleanup).await {
             Ok(_) => println!("cleaned up db"),
@@ -236,5 +235,5 @@ async fn main() {
         }
     });
 
-    futures::future::join(client_thread,cleanup_thread).await;
+    futures::future::join(client_thread, cleanup_thread).await;
 }

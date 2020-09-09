@@ -33,7 +33,7 @@ use std::time::SystemTime;
 
 pub(crate) const NON_THANKS_COMMANDS_VAR_KEY: &str = "OTHER_NON_THANKS_COMMANDS";
 
-fn get_time_as_unix_epoch(time: SystemTime) -> i64 {
+pub(crate) fn get_time_as_unix_epoch(time: SystemTime) -> i64 {
     match time.duration_since(SystemTime::UNIX_EPOCH) {
         Ok(x) => x,
         //this happens if earlier > time. Which would mean that the system time is screwed up.

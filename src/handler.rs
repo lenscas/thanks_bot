@@ -8,6 +8,7 @@ use serenity::{
 use crate::{
     commands::{moderator_only, BotId, DbPool},
     logger::check_deleted_message,
+    logger::check_edited_message,
     logger::insert_message,
 };
 pub(crate) struct Handler;
@@ -23,6 +24,13 @@ impl EventHandler for Handler {
         data.insert::<BotId>(ready.user.id);
     }
     async fn message(&self, ctx: Context, new_message: Message) {
+        let id = {
+            let data = ctx.data.read().await;
+            *data.get::<BotId>().expect("No bot id?")
+        };
+        if new_message.author.id == id {
+            return;
+        }
         let guild = match new_message.guild(&ctx).await {
             Some(x) => x,
             None => return,
@@ -53,7 +61,6 @@ impl EventHandler for Handler {
     async fn message_delete(
         &self,
         ctx: Context,
-
         channel_id: serenity::model::id::ChannelId,
         message_id: serenity::model::id::MessageId,
     ) {
@@ -73,10 +80,52 @@ impl EventHandler for Handler {
 
     async fn message_update(
         &self,
-        _ctx: Context,
+        ctx: Context,
         _old_if_available: Option<Message>,
         _new: Option<Message>,
-        _event: serenity::model::event::MessageUpdateEvent,
+        event: serenity::model::event::MessageUpdateEvent,
     ) {
+        let (mention_roles, mention_users) = match (event.mention_roles, event.mentions) {
+            (Some(x), Some(y)) => (x, y),
+            _ => {
+                let x = ctx
+                    .http
+                    .get_message(event.channel_id.into(), event.id.into())
+                    .await;
+                match x {
+                    Ok(x) => (x.mention_roles, x.mentions),
+                    Err(y) => {
+                        let _ = dbg!(
+                            event
+                                .channel_id
+                                .say(ctx, "Could not get message after it got updated :(")
+                                .await
+                        );
+                        let _ = dbg!(y);
+                        return;
+                    }
+                }
+            }
+        };
+        let x = check_edited_message(
+            &ctx,
+            event.channel_id,
+            event.id,
+            mention_roles,
+            mention_users,
+        )
+        .await;
+        if let Err(x) = x {
+            let _ = dbg!(x);
+            let _ = dbg!(
+                event
+                    .channel_id
+                    .say(
+                        ctx,
+                        "Found a deleted message but something has gone wrong when processing"
+                    )
+                    .await
+            );
+        }
     }
 }

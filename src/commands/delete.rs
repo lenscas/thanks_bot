@@ -1,10 +1,6 @@
-use super::moderator_only;
+use super::{moderator_only};
 use chrono::{Duration, Utc};
-use serenity::{
-    client::Context,
-    framework::standard::{macros::command, Args, CommandResult},
-    model::channel::Message,
-};
+use serenity::{client::Context, framework::standard::{macros::command, Args, CommandResult}, model::channel::Message};
 use std::fmt::Display;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -30,6 +26,7 @@ impl From<String> for ErrorStr {
 #[help_available]
 #[only_in("guild")]
 pub(crate) async fn delete(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+    println!("got here");
     let guild = msg.guild(&ctx).await.ok_or("not in guild")?;
     if !moderator_only(ctx, &guild, &msg.author).await? {
         return Ok(());

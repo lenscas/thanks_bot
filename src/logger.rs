@@ -1,12 +1,9 @@
 use std::time::{Duration, SystemTime};
 
-use serenity::{
-    client::Context, framework::standard::CommandResult, model::channel::Message,
-    model::id::GuildId,
-};
+use serenity::{client::Context, framework::standard::CommandResult, model::channel::Message, model::id::GuildId, model::id::UserId, prelude::Mentionable};
 use sqlx::{query, Pool, Postgres, Transaction};
 
-use crate::commands::get_time_as_unix_epoch;
+use crate::commands::{DbPool, get_time_as_unix_epoch};
 
 pub(crate) async fn insert_message(
     message: &Message,
@@ -67,4 +64,88 @@ pub(crate) async fn cleanup_db(con: &Pool<Postgres>) -> sqlx::Result<()> {
     .execute(con)
     .await
     .map(|_| ())
+}
+
+pub(crate) async fn check_deleted_message(
+    ctx: &Context,
+    channel_id: serenity::model::id::ChannelId,
+    message_id: serenity::model::id::MessageId,
+) -> CommandResult {
+    let guild = match channel_id.to_channel_cached(&ctx).await {
+        Some(x) => match x.guild() {
+            Some(x) => x,
+            None => return Ok(()),
+        },
+        None => {
+            return Ok(());
+        }
+    };
+    dbg!("got here");
+    let con = {
+        let data = ctx.data.read().await;
+        let pool = data.get::<DbPool>().expect("No db pool?");
+        pool.acquire().await
+    };
+
+    let mut con = match con {
+        Ok(x) => x,
+        Err(x) => {
+            channel_id
+                .say(
+                    ctx,
+                    "Detected removed message, but couldn't check for ghost pings.",
+                )
+                .await?;
+            return Err(x.into());
+        }
+    };
+
+    dbg!("and got here");
+
+    let message = query!(
+        "
+        SELECT 
+            author_id,content 
+        FROM message_content
+        WHERE message_id = $1
+        AND server_id = $2
+        AND (
+            0 < (
+                SELECT count(*) AS role_count
+                FROM pinged_roles 
+                WHERE message_id = $1
+                AND server_id = $2
+            )
+            OR 0 < (
+                SELECT count(*) AS user_count
+                FROM pinged_users 
+                WHERE message_id = $1
+                AND server_id = $2
+            )
+        )
+    ",
+        i64::from(message_id),
+        i64::from(guild.guild_id)
+    )
+    .fetch_optional(&mut con)
+    .await?;
+    dbg!((i64::from(message_id), i64::from(guild.guild_id)));
+    let (author, content) = if let Some(x) = dbg!(message) {
+        (UserId::from(x.author_id as u64).mention(), x.content)
+    } else {
+        return Ok(());
+    };
+    channel_id
+        .send_message(ctx, |v| {
+            v.embed(|x| {
+                x.title("Ghost ping detected").description(format!(
+                    "Author: {}
+Content: {}
+",
+                    author, content
+                ))
+            })
+        })
+        .await?;
+    Ok(())
 }

@@ -23,6 +23,27 @@
       ]
     }
   },
+  "1be7434ceccceb79f993d569916a2afcc2527df7deef1585764c075242962ecc": {
+    "query": "\n            SELECT role_id \n            FROM pinged_roles\n            WHERE message_id = $1\n            AND server_id = $2\n        ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "role_id",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
   "2240773121ecfc27a3952bb5da43fcb3d5cdd09aa7d92b33fea2b51d813e4ad6": {
     "query": "INSERT INTO pinged_roles (role_id,message_id,server_id) VALUES ($1,$2,$3)",
     "describe": {
@@ -35,6 +56,27 @@
         ]
       },
       "nullable": []
+    }
+  },
+  "2660cdbf857af75772a0cd0d17f41a57988acc40bfaed576da01a318fd2d734e": {
+    "query": "\n            SELECT user_id\n            FROM pinged_users\n            WHERE message_id = $1\n            AND server_id = $2\n        ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "user_id",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false
+      ]
     }
   },
   "2a79d9ab89a12329cf9a01283a34d01df3c0b86d02882d348e4dce734c31df90": {
@@ -167,8 +209,8 @@
       ]
     }
   },
-  "f9157a66ea07ed508eb51b218705c4bf762ce5adbdf70d158beb1934fd332876": {
-    "query": "\n        SELECT \n            author_id,content \n        FROM message_content\n        WHERE message_id = $1\n        AND server_id = $2\n        AND (\n            0 < (\n                SELECT count(*) AS role_count\n                FROM pinged_roles \n                WHERE message_id = $1\n                AND server_id = $2\n            )\n            OR 0 < (\n                SELECT count(*) AS user_count\n                FROM pinged_users \n                WHERE message_id = $1\n                AND server_id = $2\n            )\n        )\n    ",
+  "d2309b37b39e2422a0e3a72374c30899c29d816c0ba6b514f77d9c3ab34fa094": {
+    "query": "\n            SELECT \n                author_id,\n                content,\n                count(role_count.role_count) as role_count\n            FROM message_content\n            INNER JOIN (\n                SELECT \n                    COUNT(*) as role_count,\n                    message_id,\n                    server_id\n                FROM pinged_roles\n                GROUP BY message_id, server_id\n            ) AS role_count\n            ON (\n                message_content.message_id = role_count.message_id\n            AND\n                message_content.server_id = role_count.server_id\n            )\n            WHERE message_content.message_id = $1\n            AND message_content.server_id = $2\n            GROUP BY author_id,content,role_count.role_count\n            LIMIT 1\n        ",
     "describe": {
       "columns": [
         {
@@ -180,6 +222,11 @@
           "ordinal": 1,
           "name": "content",
           "type_info": "Text"
+        },
+        {
+          "ordinal": 2,
+          "name": "role_count",
+          "type_info": "Int8"
         }
       ],
       "parameters": {
@@ -190,7 +237,8 @@
       },
       "nullable": [
         false,
-        false
+        false,
+        null
       ]
     }
   }

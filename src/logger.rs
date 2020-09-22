@@ -1,12 +1,10 @@
-use std::{
-    time::{Duration, SystemTime},
-};
+use std::time::{Duration, SystemTime};
 
 use serenity::{
     client::Context, framework::standard::CommandError, framework::standard::CommandResult,
-    model::channel::GuildChannel, model::channel::Message,
-    model::id::ChannelId, model::id::GuildId, model::id::RoleId, model::id::UserId,
-    model::prelude::User, prelude::Mentionable,
+    model::channel::GuildChannel, model::channel::Message, model::id::ChannelId,
+    model::id::GuildId, model::id::RoleId, model::id::UserId, model::prelude::User,
+    prelude::Mentionable,
 };
 use sqlx::{pool::PoolConnection, query, Pool, Postgres, Transaction};
 
@@ -299,11 +297,10 @@ pub(crate) async fn check_edited_message(
         "Detected an edited message, but could not check for pings",
     )
     .await?;
-    let (author, content, _) =
-        match get_message(&mut con, message_id, guild.guild_id).await? {
-            None => return Ok(()),
-            Some(x) => x,
-        };
+    let (author, content, _) = match get_message(&mut con, message_id, guild.guild_id).await? {
+        None => return Ok(()),
+        Some(x) => x,
+    };
     let has_pings = check_deleted_pings(
         con,
         message_id.into(),
@@ -319,10 +316,7 @@ pub(crate) async fn check_edited_message(
         .send_message(ctx, |v| {
             v.embed(|x| {
                 x.title("Ghost ping detected in edited message")
-                    .description(format!(
-                        "Author: {}\nContent: {}",
-                        author, content
-                    ))
+                    .description(format!("Author: {}\nContent: {}", author, content))
             })
         })
         .await?;

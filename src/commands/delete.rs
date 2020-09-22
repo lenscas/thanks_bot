@@ -30,6 +30,7 @@ impl From<String> for ErrorStr {
 #[help_available]
 #[only_in("guild")]
 pub(crate) async fn delete(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+    println!("got here");
     let guild = msg.guild(&ctx).await.ok_or("not in guild")?;
     if !moderator_only(ctx, &guild, &msg.author).await? {
         return Ok(());

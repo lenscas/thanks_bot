@@ -127,33 +127,6 @@
       "nullable": []
     }
   },
-  "82651e13fbf8cbddd9dfa0bc7523f315b84a8258f103d7272fe16a4fa37d76d7": {
-    "query": "\n        SELECT \n            author_id,content \n        FROM message_content\n        WHERE 0 < (\n            SELECT count(*) AS role_count\n            FROM pinged_roles \n            WHERE message_id = $1\n            AND server_id = $2\n        )\n        OR 0 < (\n            SELECT count(*) AS user_count\n            FROM pinged_users \n            WHERE message_id = $1\n            AND server_id = $2\n        )\n    ",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "author_id",
-          "type_info": "Int8"
-        },
-        {
-          "ordinal": 1,
-          "name": "content",
-          "type_info": "Text"
-        }
-      ],
-      "parameters": {
-        "Left": [
-          "Int8",
-          "Int8"
-        ]
-      },
-      "nullable": [
-        false,
-        false
-      ]
-    }
-  },
   "93570c4015abd60865a2246b9c6695b577cfda40498de0edf47f3dcaed4d21f5": {
     "query": "\n                INSERT INTO thanked_users (user_id,server_id, times)\n                VALUES($1,$2,1) \n                ON CONFLICT ON CONSTRAINT thanked_users_pk \n                DO \n                UPDATE SET times = thanked_users.times + 1;\n                ",
     "describe": {

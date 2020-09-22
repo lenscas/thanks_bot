@@ -1,8 +1,16 @@
 use async_trait::async_trait;
-use serenity::{client::{Context, EventHandler}, model::channel::Message, model::prelude::Ready};
+use serenity::{
+    client::{Context, EventHandler},
+    model::channel::Message,
+    model::prelude::Ready,
+};
 
-use crate::{commands::{BotId, DbPool, moderator_only}, logger::check_deleted_message, logger::insert_message};
-pub(crate)  struct Handler;
+use crate::{
+    commands::{moderator_only, BotId, DbPool},
+    logger::check_deleted_message,
+    logger::insert_message,
+};
+pub(crate) struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {

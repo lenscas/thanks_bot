@@ -1,24 +1,23 @@
 mod commands;
-mod logger;
 mod handler;
+mod logger;
 
 use std::time::Duration;
 
 use dotenv::var;
 use handler::Handler;
-use logger::{cleanup_db};
+use logger::cleanup_db;
+use serenity::prelude::*;
 use serenity::{
     framework::standard::{macros::hook, CommandResult, StandardFramework},
-    model::{channel::Message},
+    model::channel::Message,
 };
-use serenity::{prelude::*};
-use sqlx::{PgPool};
+use sqlx::PgPool;
 
-use commands::{MY_HELP};
+use commands::MY_HELP;
 use futures::stream::StreamExt;
 
 use crate::commands::{DbPool, CONFIG_GROUP, GENERAL_GROUP};
-
 
 #[hook]
 async fn after(_ctx: &Context, _msg: &Message, command_name: &str, command_result: CommandResult) {

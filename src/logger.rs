@@ -1,9 +1,12 @@
 use std::time::{Duration, SystemTime};
 
-use serenity::{client::Context, framework::standard::CommandResult, model::channel::Message, model::id::GuildId, model::id::UserId, prelude::Mentionable};
+use serenity::{
+    client::Context, framework::standard::CommandResult, model::channel::Message,
+    model::id::GuildId, model::id::UserId, prelude::Mentionable,
+};
 use sqlx::{query, Pool, Postgres, Transaction};
 
-use crate::commands::{DbPool, get_time_as_unix_epoch};
+use crate::commands::{get_time_as_unix_epoch, DbPool};
 
 pub(crate) async fn insert_message(
     message: &Message,

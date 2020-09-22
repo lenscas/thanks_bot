@@ -1,6 +1,10 @@
-use super::{moderator_only};
+use super::moderator_only;
 use chrono::{Duration, Utc};
-use serenity::{client::Context, framework::standard::{macros::command, Args, CommandResult}, model::channel::Message};
+use serenity::{
+    client::Context,
+    framework::standard::{macros::command, Args, CommandResult},
+    model::channel::Message,
+};
 use std::fmt::Display;
 
 #[derive(Debug, Clone, Eq, PartialEq)]

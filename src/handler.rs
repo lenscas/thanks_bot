@@ -20,7 +20,8 @@ impl EventHandler for Handler {
         let mut data = ctx.data.write().await;
         data.insert::<BotId>(ready.user.id);
         let mut helper_text = dotenv::var("COMMAND_SYMBOL").unwrap();
-        helper_text.push_str("help");
+        helper_text.push_str("help in #");
+        helper_text.push_str(&dotenv::var("ALLOWED_HELP_CHANNEL").unwrap());
         ctx.set_activity(Activity::listening(&helper_text))
         .await;
     }

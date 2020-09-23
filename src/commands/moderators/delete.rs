@@ -38,7 +38,7 @@ pub(crate) async fn delete(ctx: &Context, msg: &Message, mut args: Args) -> Comm
     }
     //it needs multiple requests to do something, thus it can be quite slow
     //let the caller know that something is happening
-    msg.channel_id.say(&ctx.http, "Working on i!").await?;
+    msg.channel_id.say(&ctx.http, "Working on it!").await?;
 
     //its + 2 to compensate for the message of the bot AND the command message
     let amount_of_messages: u64 = args.single::<u64>()? + 2;

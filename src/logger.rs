@@ -1,4 +1,4 @@
-use std::time::{Duration, SystemTime};
+use std::time::SystemTime;
 
 use serenity::{
     client::Context, framework::standard::CommandError, framework::standard::CommandResult,
@@ -6,9 +6,9 @@ use serenity::{
     model::id::GuildId, model::id::RoleId, model::id::UserId, model::prelude::User,
     prelude::Mentionable,
 };
-use sqlx::{pool::PoolConnection, query, Pool, Postgres, Transaction};
+use sqlx::{pool::PoolConnection, query, Postgres, Transaction};
 
-use crate::commands::{get_time_as_unix_epoch, DbPool};
+use crate::utils::{get_time_as_unix_epoch, DbPool};
 
 pub(crate) async fn insert_message(
     message: &Message,
@@ -60,19 +60,6 @@ pub(crate) async fn insert_message(
     if message.
     */
     Ok(())
-}
-
-pub(crate) async fn cleanup_db(con: &Pool<Postgres>) -> sqlx::Result<()> {
-    let time_stamp = get_time_as_unix_epoch(SystemTime::now() - Duration::from_secs(1800));
-    query!(
-        "DELETE FROM message_content
-        CASCADE
-        WHERE at_time < $1",
-        time_stamp
-    )
-    .execute(con)
-    .await
-    .map(|_| ())
 }
 
 async fn get_guild_channel(

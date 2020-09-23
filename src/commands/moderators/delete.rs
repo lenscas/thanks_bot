@@ -1,4 +1,3 @@
-use super::moderator_only;
 use chrono::{Duration, Utc};
 use serenity::{
     client::Context,
@@ -6,6 +5,8 @@ use serenity::{
     model::channel::Message,
 };
 use std::fmt::Display;
+
+use crate::utils::is_moderator;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub(crate) struct ErrorStr(String);
@@ -32,7 +33,7 @@ impl From<String> for ErrorStr {
 pub(crate) async fn delete(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     println!("got here");
     let guild = msg.guild(&ctx).await.ok_or("not in guild")?;
-    if !moderator_only(ctx, &guild, &msg.author).await? {
+    if !is_moderator(ctx, &guild, &msg.author).await? {
         return Ok(());
     }
     //it needs multiple requests to do something, thus it can be quite slow

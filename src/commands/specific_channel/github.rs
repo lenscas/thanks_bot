@@ -1,4 +1,4 @@
-use super::is_in_incorrect_channel;
+use crate::commands::is_in_incorrect_channel;
 use serenity::{
     client::Context,
     framework::standard::{macros::command, CommandResult},

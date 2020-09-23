@@ -2,26 +2,27 @@ use async_trait::async_trait;
 use serenity::{
     client::{Context, EventHandler},
     model::channel::Message,
+    model::prelude::Activity,
     model::prelude::Ready,
 };
 
 use crate::{
-    commands::{moderator_only, BotId, DbPool},
     logger::check_deleted_message,
     logger::check_edited_message,
     logger::insert_message,
+    utils::{is_moderator, BotId, DbPool},
 };
 pub(crate) struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
-        println!(
-            "{} is connected! with id {}",
-            ready.user.name, ready.user.id
-        );
         let mut data = ctx.data.write().await;
         data.insert::<BotId>(ready.user.id);
+        let mut helper_text = dotenv::var("COMMAND_SYMBOL").unwrap();
+        helper_text.push_str("help in #");
+        helper_text.push_str(&dotenv::var("ALLOWED_HELP_CHANNEL").unwrap());
+        ctx.set_activity(Activity::listening(&helper_text)).await;
     }
     async fn message(&self, ctx: Context, new_message: Message) {
         let id = {
@@ -35,7 +36,7 @@ impl EventHandler for Handler {
             Some(x) => x,
             None => return,
         };
-        if moderator_only(&ctx, &guild, &new_message.author)
+        if is_moderator(&ctx, &guild, &new_message.author)
             .await
             .unwrap_or(false)
         {

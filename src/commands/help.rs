@@ -14,7 +14,7 @@ use std::collections::HashSet;
 #[individual_command_tip = "Hello! GameDev!\n\
 I'm here to keep track of who is helpful so the mods can reward them with a special role.\n\
 Did you recently get help and want to show your appreciation? Use the !thx command.\n\
-If you want more information about a specific command, just pass the command as argument."]
+If you want more information about a specific command, just pass the command as argument (!help thx)."]
 // Some arguments require a `{}` in order to replace it with contextual information.
 // In this case our `{}` refers to a command's name.
 #[command_not_found_text = "Could not find: `{}`."]
@@ -39,7 +39,7 @@ If you want more information about a specific command, just pass the command as 
 // cases of ~~strikethrough-commands~~, but only if
 // `strikethrough_commands_tip_{dm, guild}` aren't specified.
 // If you pass in a value, it will be displayed instead.
-pub(crate) async fn my_help(
+async fn my_help(
     context: &Context,
     msg: &Message,
     args: Args,

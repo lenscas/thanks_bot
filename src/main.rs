@@ -1,31 +1,26 @@
 mod commands;
 mod handler;
+mod hooks;
 mod logger;
+mod tasks;
+mod utils;
 
 use std::time::Duration;
 
 use dotenv::var;
 use handler::Handler;
-use logger::cleanup_db;
+use tasks::cleanup_db;
+use serenity::framework::standard::StandardFramework;
 use serenity::prelude::*;
-use serenity::{
-    framework::standard::{macros::hook, CommandResult, StandardFramework},
-    model::channel::Message,
-};
 use sqlx::PgPool;
 
-use commands::MY_HELP;
 use futures::stream::StreamExt;
 
-use crate::commands::{DbPool, CONFIG_GROUP, GENERAL_GROUP};
-
-#[hook]
-async fn after(_ctx: &Context, _msg: &Message, command_name: &str, command_result: CommandResult) {
-    match command_result {
-        Ok(()) => println!("Processed command '{}'", command_name),
-        Err(why) => println!("Command '{}' returned error {:?}", command_name, why),
-    }
-}
+use crate::{
+    utils::DbPool,
+    commands::{ CONFIG_GROUP, GENERAL_GROUP, MY_HELP},
+    hooks::after,
+};
 
 #[tokio::main]
 async fn main() {
@@ -40,10 +35,7 @@ async fn main() {
     let framework = StandardFramework::new()
         .configure(|c| {
             c.with_whitespace(true)
-                .prefix("!")
-                // In this case, if "," would be first, a message would never
-                // be delimited at ", ", forcing you to trim your arguments if you
-                // want to avoid whitespaces at the start of each.
+                .prefix(&var("COMMAND_SYMBOL").expect("Could not get the command symbol"))
                 .delimiters(vec![", ", ","])
         })
         .help(&MY_HELP)

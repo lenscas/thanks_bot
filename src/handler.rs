@@ -6,7 +6,7 @@ use serenity::{
 };
 
 use crate::{
-    commands::{moderator_only, BotId, DbPool},
+    utils::{is_moderator, BotId, DbPool},
     logger::check_deleted_message,
     logger::check_edited_message,
     logger::insert_message,
@@ -35,7 +35,7 @@ impl EventHandler for Handler {
             Some(x) => x,
             None => return,
         };
-        if moderator_only(&ctx, &guild, &new_message.author)
+        if is_moderator(&ctx, &guild, &new_message.author)
             .await
             .unwrap_or(false)
         {

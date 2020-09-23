@@ -9,17 +9,19 @@ use std::time::Duration;
 
 use dotenv::var;
 use handler::Handler;
-use tasks::cleanup_db;
 use serenity::framework::standard::StandardFramework;
 use serenity::prelude::*;
 use sqlx::PgPool;
+use tasks::cleanup_db;
 
 use futures::stream::StreamExt;
 
 use crate::{
-    utils::DbPool,
-    commands::{ CONFIG_GROUP, GENERAL_GROUP, MY_HELP},
+    commands::{
+        ALLCHANNELS_GROUP, MODERATORS_GROUP, MY_HELP, SPECIFICCHANNEL_GROUP,
+    },
     hooks::after,
+    utils::DbPool,
 };
 
 #[tokio::main]
@@ -39,8 +41,9 @@ async fn main() {
                 .delimiters(vec![", ", ","])
         })
         .help(&MY_HELP)
-        .group(&GENERAL_GROUP)
-        .group(&CONFIG_GROUP)
+        .group(&SPECIFICCHANNEL_GROUP)
+        .group(&ALLCHANNELS_GROUP)
+        .group(&MODERATORS_GROUP)
         .after(after);
     let mut client = Client::new(&discord_token)
         .event_handler(Handler)

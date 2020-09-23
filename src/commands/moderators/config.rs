@@ -1,4 +1,4 @@
-use crate::utils::DbPool;
+use crate::utils::{DbPool, is_moderator};
 use serenity::{
     client::Context,
     framework::standard::{macros::command, Args, CommandResult},
@@ -21,6 +21,9 @@ pub(crate) async fn set_delay(ctx: &Context, msg: &Message, mut args: Args) -> C
         Some(x) => x,
         None => return Ok(()),
     };
+    if !is_moderator(ctx, &guild, &msg.author).await? {
+        return Ok(());
+    }
 
     let mut transaction = {
         let data = ctx.data.read().await;

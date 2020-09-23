@@ -6,6 +6,8 @@ use serenity::{
 };
 use std::fmt::Display;
 
+use crate::utils::is_moderator;
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub(crate) struct ErrorStr(String);
 impl Display for ErrorStr {
@@ -31,6 +33,9 @@ impl From<String> for ErrorStr {
 pub(crate) async fn delete(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     println!("got here");
     let guild = msg.guild(&ctx).await.ok_or("not in guild")?;
+    if !is_moderator(ctx, &guild, &msg.author).await? {
+        return Ok(());
+    }
     //it needs multiple requests to do something, thus it can be quite slow
     //let the caller know that something is happening
     msg.channel_id.say(&ctx.http, "Working on i!").await?;

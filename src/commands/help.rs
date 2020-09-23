@@ -39,7 +39,7 @@ If you want more information about a specific command, just pass the command as 
 // cases of ~~strikethrough-commands~~, but only if
 // `strikethrough_commands_tip_{dm, guild}` aren't specified.
 // If you pass in a value, it will be displayed instead.
-pub(crate) async fn my_help(
+async fn my_help(
     context: &Context,
     msg: &Message,
     args: Args,

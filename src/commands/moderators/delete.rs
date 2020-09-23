@@ -31,17 +31,16 @@ impl From<String> for ErrorStr {
 #[help_available]
 #[only_in("guild")]
 pub(crate) async fn delete(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    println!("got here");
+    //its + 2 to compensate for the message of the bot AND the command message
+    let amount_of_messages: u64 = args.single::<u64>()? + 2;
+
     let guild = msg.guild(&ctx).await.ok_or("not in guild")?;
     if !is_moderator(ctx, &guild, &msg.author).await? {
         return Ok(());
     }
     //it needs multiple requests to do something, thus it can be quite slow
     //let the caller know that something is happening
-    msg.channel_id.say(&ctx.http, "Working on i!").await?;
-
-    //its + 2 to compensate for the message of the bot AND the command message
-    let amount_of_messages: u64 = args.single::<u64>()? + 2;
+    msg.channel_id.say(&ctx.http, "Working on it!").await?;
 
     let channel = msg.channel(ctx).await.ok_or("no channel")?.id().into();
     //discord only allows you to delete messages that are less than 2 weeks old

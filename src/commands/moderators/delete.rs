@@ -31,7 +31,7 @@ impl From<String> for ErrorStr {
 #[help_available]
 #[only_in("guild")]
 pub(crate) async fn delete(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-     //its + 2 to compensate for the message of the bot AND the command message
+    //its + 2 to compensate for the message of the bot AND the command message
     let amount_of_messages: u64 = args.single::<u64>()? + 2;
 
     let guild = msg.guild(&ctx).await.ok_or("not in guild")?;

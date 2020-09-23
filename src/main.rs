@@ -17,9 +17,7 @@ use tasks::cleanup_db;
 use futures::stream::StreamExt;
 
 use crate::{
-    commands::{
-        ALLCHANNELS_GROUP, MODERATORS_GROUP, MY_HELP, SPECIFICCHANNEL_GROUP,
-    },
+    commands::{ALLCHANNELS_GROUP, MODERATORS_GROUP, MY_HELP, SPECIFICCHANNEL_GROUP},
     hooks::after,
     utils::DbPool,
 };

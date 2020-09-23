@@ -1,6 +1,6 @@
 use std::time::{Duration, SystemTime};
 
-use sqlx::{Pool, Postgres, query};
+use sqlx::{query, Pool, Postgres};
 
 use crate::utils::get_time_as_unix_epoch;
 

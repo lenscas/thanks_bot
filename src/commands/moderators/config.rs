@@ -1,4 +1,4 @@
-use crate::utils::{DbPool, is_moderator};
+use crate::utils::{is_moderator, DbPool};
 use serenity::{
     client::Context,
     framework::standard::{macros::command, Args, CommandResult},

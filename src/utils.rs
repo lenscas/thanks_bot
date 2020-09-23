@@ -1,6 +1,9 @@
 use std::time::SystemTime;
 
-use serenity::{client::Context, framework::standard::CommandError, model::guild::Guild, model::id::UserId, model::prelude::User, prelude::TypeMapKey};
+use serenity::{
+    client::Context, framework::standard::CommandError, model::guild::Guild, model::id::UserId,
+    model::prelude::User, prelude::TypeMapKey,
+};
 use sqlx::PgPool;
 
 pub(crate) fn get_time_as_unix_epoch(time: SystemTime) -> i64 {

@@ -1,10 +1,9 @@
 use serenity::framework::standard::macros::group;
 
-
-mod learnprogramming;
-mod questions;
 mod codeblock;
 mod google;
+mod learnprogramming;
+mod questions;
 
 use codeblock::CODEBLOCK_COMMAND;
 use google::GOOGLE_COMMAND;

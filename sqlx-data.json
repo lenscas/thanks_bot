@@ -82,6 +82,33 @@
       "nullable": []
     }
   },
+  "4ba13acfed20f58ec33a994538421c6472102385e7740f41b963f17524674c79": {
+    "query": "\n            SELECT \n                thanked_users.times,\n                (\n                    SELECT COUNT(*) FROM (\n                        SELECT times,server_id\n                        FROM thanked_users\n                            WHERE times >= (\n                                SELECT times\n                                FROM thanked_users\n                                WHERE server_id = $1\n                                AND user_id = $2\n                            ) AND server_id = $1\n                            GROUP BY times,server_id\n                    ) as rankings\n                ) AS rank\n            FROM thanked_users\n            WHERE thanked_users.user_id = $2\n            AND thanked_users.server_id = $1\n            GROUP BY thanked_users.times\n        ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "times",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "rank",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false,
+        null
+      ]
+    }
+  },
   "73de726bbb307fc07c80f8927befefb283079a7833c56d5b0ca2bfaf81811c21": {
     "query": "INSERT INTO server_config (server_id, time_between_thanking)\n        VALUES ($1,$2)\n        ON CONFLICT ON CONSTRAINT server_config_pk\n        DO\n        UPDATE SET time_between_thanking=$2",
     "describe": {
@@ -135,6 +162,33 @@
       "nullable": [
         false,
         false
+      ]
+    }
+  },
+  "c3de04dd568a3d6c6e46fbdb10482a99f02b0ae161f371ecb1ccaafd48a707b6": {
+    "query": "\n        SELECT \n            thanked_users.times,\n            (\n                SELECT COUNT(*) FROM (\n                    SELECT times,server_id\n                    FROM thanked_users\n                        WHERE times >= (\n                            SELECT times\n                            FROM thanked_users\n                            WHERE server_id = $1\n                            AND user_id = $2\n                        ) AND server_id = $1\n                        GROUP BY times,server_id\n                ) as rankings\n            ) AS rank\n        FROM thanked_users\n        WHERE thanked_users.user_id = $2\n        AND thanked_users.server_id = $1\n        GROUP BY thanked_users.times\n    ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "times",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "rank",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false,
+        null
       ]
     }
   },

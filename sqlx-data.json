@@ -1,5 +1,28 @@
 {
   "db": "PostgreSQL",
+  "00aa827aedb51be01f2ceb1073b95f63d97680e1272c23ecf428c7326a93959c": {
+    "query": "\n            SELECT count(*) AS count \n            FROM recent_thanked\n            WHERE user_id = $1 \n            AND did_thank = $2\n            AND at_time > $3\n            AND server_id = $4\n            ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "count",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        null
+      ]
+    }
+  },
   "1be7434ceccceb79f993d569916a2afcc2527df7deef1585764c075242962ecc": {
     "query": "\n            SELECT role_id \n            FROM pinged_roles\n            WHERE message_id = $1\n            AND server_id = $2\n        ",
     "describe": {
@@ -82,12 +105,74 @@
       "nullable": []
     }
   },
+  "487dcc03d5aa88d56792ff02d14524d0111d62d1699057fc9c67d4be7621633a": {
+    "query": "SELECT time_between_thanking\n        FROM server_config\n        WHERE server_id=$1",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "time_between_thanking",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "4ba13acfed20f58ec33a994538421c6472102385e7740f41b963f17524674c79": {
+    "query": "\n            SELECT \n                thanked_users.times,\n                (\n                    SELECT COUNT(*) FROM (\n                        SELECT times,server_id\n                        FROM thanked_users\n                            WHERE times >= (\n                                SELECT times\n                                FROM thanked_users\n                                WHERE server_id = $1\n                                AND user_id = $2\n                            ) AND server_id = $1\n                            GROUP BY times,server_id\n                    ) as rankings\n                ) AS rank\n            FROM thanked_users\n            WHERE thanked_users.user_id = $2\n            AND thanked_users.server_id = $1\n            GROUP BY thanked_users.times\n        ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "times",
+          "type_info": "Int8"
+        },
+        {
+          "ordinal": 1,
+          "name": "rank",
+          "type_info": "Int8"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": [
+        false,
+        null
+      ]
+    }
+  },
   "73de726bbb307fc07c80f8927befefb283079a7833c56d5b0ca2bfaf81811c21": {
     "query": "INSERT INTO server_config (server_id, time_between_thanking)\n        VALUES ($1,$2)\n        ON CONFLICT ON CONSTRAINT server_config_pk\n        DO\n        UPDATE SET time_between_thanking=$2",
     "describe": {
       "columns": [],
       "parameters": {
         "Left": [
+          "Int8",
+          "Int8"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "7615b1d38f8231692abc957ed8367917ef6623181e418049c7cefcefda2c4cdb": {
+    "query": "\n                    INSERT INTO recent_thanked (user_id, did_thank, server_id, at_time)\n                    VALUES ($1,$2,$3,$4)\n                    ON CONFLICT ON CONSTRAINT recent_thanked_pk \n                    DO\n                    UPDATE SET at_time = $4;\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8",
           "Int8",
           "Int8"
         ]
@@ -106,6 +191,19 @@
           "Int8",
           "Int8",
           "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "93570c4015abd60865a2246b9c6695b577cfda40498de0edf47f3dcaed4d21f5": {
+    "query": "\n                INSERT INTO thanked_users (user_id,server_id, times)\n                VALUES($1,$2,1) \n                ON CONFLICT ON CONSTRAINT thanked_users_pk \n                DO \n                UPDATE SET times = thanked_users.times + 1;\n                ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Int8",
+          "Int8"
         ]
       },
       "nullable": []

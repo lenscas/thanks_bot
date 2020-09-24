@@ -30,7 +30,6 @@ async fn main() {
     var("MUTE_ROLE").expect("No MUTE_ROLE set in .env");
     var("EVIDENCE_CHANNEL").expect("No EVIDENCE_CHANNEL set in .env");
 
-
     let discord_token = var("DISCORD_TOKEN").expect("DISCORD_TOKEN is not set.");
     let db_url = var("DATABASE_URL").expect("DATABASE_URL is not set.");
     let pool = PgPool::connect(&db_url)

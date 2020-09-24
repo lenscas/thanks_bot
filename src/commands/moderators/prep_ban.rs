@@ -12,7 +12,7 @@ use serenity::{
     "Prepares someone to get banned by muting them and by copying the given amount of messages to the log channel"
 )]
 #[usage("{user},{amount_of_messages}")]
-#[aliases("ban", "prepBan","prepban")]
+#[aliases("ban", "prepBan", "prepban")]
 #[example = "@thanks_bot, 10"]
 #[help_available]
 #[only_in("guild")]
@@ -39,13 +39,16 @@ async fn contain_error(ctx: &Context, msg: &Message, mut args: Args) -> CommandR
         .map_err(|_| {
             let mut other_way = Args::new(&msg.content, &[" ".into()]);
             other_way.advance();
-            other_way.single().map_or_else(|_| {
-                other_way.advance();
-                other_way.single()
-            }, Ok)
+            other_way.single().map_or_else(
+                |_| {
+                    other_way.advance();
+                    other_way.single()
+                },
+                Ok,
+            )
         })
         .or_else(|v| v)?;
-    
+
     let guild = match msg.guild(&ctx).await {
         Some(x) => x,
         None => return Ok(()),

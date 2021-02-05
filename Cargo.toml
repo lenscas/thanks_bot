@@ -10,7 +10,7 @@ edition = "2018"
 serenity = { git = "https://github.com/serenity-rs/serenity", rev = "323875f5a9ca9b22202e6e291bfca0c78794cfdb", features = ["framework", "standard_framework", "rustls_backend"] }
 dotenv = "0.15.0"
 tokio = { version = "*", features = ["macros", "time"] }
-sqlx = { version = "0.4.0-beta.1", default-features = false, features = ["runtime-tokio", "macros", "postgres", "offline", "json"] }
+sqlx = { version = "0.5.1", default-features = false, features = ["runtime-tokio", "macros", "postgres", "offline", "json"] }
 async-trait = "*"
 prettytable-rs = "^0.8"
 serde_json = "*"
